@@ -6,11 +6,11 @@ An _mruby_ gem that implements finalizers. The main purpose of this gem is work 
 
 ### The GC Callback
 
-Internally, these finalizers are able to work by use of _mruby_'s GC cleanup callback. The gem starts by building an instance of it’s data class (`Finalize::Emittable`) and waits for the instance's GC callback to be called after the instance is destroyed. The GC callback was never intended to be used as a finalizer so this gem uses it cautiously.
+Internally, these finalizers are able to work by use of _mruby_'s GC cleanup callback. The gem starts by building an instance of its data class (`Finalize::Emittable`) and waits for the instance's GC callback to be called after the instance is destroyed. The GC callback was never intended to be used as a finalizer so this gem uses it cautiously.
 
 The main limitation of this solution is that calling many of the _mruby_ functions inside this callback can cause segfaults or unexpected behaviour, and thus should be avoided in production code unless you know what you are doing. The two APIs offered by _mruby-finalize_ use different solutions get around this limitation. When an object is destroyed, the Ruby API will queue the object's finalizers for later whereas the C++ API executes them immediately but restricts what can be done in them.
 
-Another limitation to consider is that all finalizers are disabled as soon as the interpreter is shutdown, specifically when the _mruby-finalize_ gem finalizer (`mrb_mruby_finalize_gem_final`) is called. Any gem that lists _mruby-finalize_ as a dependency can use it's own finalizer to clean up any live objects that it defined a finalizer on. This will be safe as _mruby_ calls gem finalizers in a hierarchical order (dependee's finalizer before the dependent's finalizer).
+Another limitation to consider is that all finalizers are disabled as soon as the interpreter is shutdown, specifically when the _mruby-finalize_ gem finalizer (`mrb_mruby_finalize_gem_final`) is called. Any gem that lists _mruby-finalize_ as a dependency can use its own finalizer to clean up any live objects that it defined a finalizer on. This will be safe as _mruby_ calls gem finalizers in a hierarchical order (dependee's finalizer before the dependent's finalizer).
 
 ### Indirect Finalizers
 
@@ -67,6 +67,8 @@ $count #=> 0
 
 It doesn't make sense to catch an error raised by a finalizer during a call to `Finalize::process` as the finalizer may have been defined by unrelated code. For this reason, an uncaught error in a finalizer is fatal.
 
+Remember to avoid the common mistake where your finalizer inadvertently holds a reference to the object you are defining it on. See [_The Trouble with Ruby Finalizers_](https://www.mikeperham.com/2010/02/24/the-trouble-with-ruby-finalizers/).
+
 ## C++ API
 
 With the C++ API you can define finalizers (`Lambda`s) on most objects. Unlink the Ruby API, these finalizers will be executed immediately after the object is destroyed:
@@ -102,3 +104,4 @@ auto finalizer = [] { printf("object_destroyed"); };
 Finalize::DefinitionAffiliation affiliation = Finalize::define_finalizer(mrb, object, finalizer);
 affiliation //=> Finalize::DefinitionAffiliation::indirect
 ```
+

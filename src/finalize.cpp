@@ -69,11 +69,11 @@ namespace Finalize
 
 void mrb_mruby_finalize_gem_final(mrb_state* mrb)
 {
-  return Finalize::finalize(mrb);
+  Finalize::finalize(mrb);
 }
 
 
 void mrb_mruby_finalize_gem_init(mrb_state* mrb)
 {
-  return Finalize::initialize(mrb);
+  Finalize::initialize(mrb);
 }

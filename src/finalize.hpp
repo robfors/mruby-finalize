@@ -49,7 +49,7 @@ namespace Finalize
 }
 
 
-// called by mruby to finalize the gem
+// called by mruby when it is shutting down
 extern "C"
 void mrb_mruby_finalize_gem_final(mrb_state* mrb);
 

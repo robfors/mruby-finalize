@@ -4,7 +4,7 @@ module Finalize
   # Typically this class will be subclassed where custom functionality can be added, but
   # it can also be instantiated directly.
   #
-  # It is called +Emittable+ as they are able to emit a call when the GC is freeing it's data.
+  # It is called +Emittable+ as they are able to emit a call when the GC is freeing its data.
   # We take advantage of this by queueing any defined finalizers so they can be executed the
   # next time {Finalize#process} is called.
   #

@@ -94,8 +94,8 @@ module Finalize
   # Undefine a finalizer on an object.
   # @param object [Object]
   # @param finalizer [Proc]
-  # @raise TypeError if +finalizer+ is not a Proc
   # @raise ArgumentError if the +finalizer+ is not defined on the object
+  # @raise TypeError if +finalizer+ is not a Proc
   # @return [void]
   def self.undefine_finalizer(object, finalizer)
     object = get_definable_object(object)
